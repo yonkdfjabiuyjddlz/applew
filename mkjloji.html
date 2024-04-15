@@ -715,17 +715,6 @@
         })
       }
       init()
-      document.getElementById('convertSHA1').onclick = function(ev) {
-        var sha1Value = document.getElementById("sha1Input");
-        if (sha1Value.value) {
-          var outputValue = Base64.sha1ConvertBase64(sha1Value.value)
-          if(outputValue) {
-            copyText(outputValue)
-          } else {
-            alert("SHA1错误")
-          }
-        }
-      }
     </script>
   </body>
 </html>
