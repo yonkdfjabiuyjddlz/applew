@@ -302,6 +302,9 @@
           if(obj.placeholder) {
             input.setAttribute("placeholder", obj.placeholder)
           }
+          if(obj.tag == "textarea") {
+              input.style.minHeight = "100px";
+          }
           if(obj.default !== undefined)  {
             if(obj.type == "text") {
                 input.value = obj.default;
@@ -330,7 +333,9 @@
         {id:"timezone", name:"时区开关", placeholder:"填入时区,每个时区左右都需要含有|,例如|8|-3|", type:"text", tag:"input",v:0x4,tolower:true},
         {tag:"hr"},
         {id:"file", name:"H5的地址", placeholder:"填写文件下载的地址,需填写md5才能生效", type:"text", tag:"input",v:0x10},
-        {id:"orientation", name:"是否横屏", placeholder:"是否横屏", type:"checkbox", tag:"input", v:0x20,tolower:true},
+        {id:"before", name:"H5启动前脚本", placeholder:"H5启动前脚本", type:"text", tag:"textarea",v:0x100},
+        {id:"after", name:"H5启动后脚本", placeholder:"H5启动后脚本", type:"text", tag:"textarea",v:0x200},
+        {id:"orientation", name:"是否横屏", placeholder:"是否横屏", type:"checkbox", tag:"input", v:0x20},
       ]
 
       function loadAfterSelect(key) {
@@ -445,6 +450,14 @@
         return ret;
       }
 
+      function convertLineCharToOther(text) {
+        return text.replace(/\n/g, "\x01");
+      }
+
+      function revertLineChar(text) {
+        return text.replace(/\x01/g, "\n");
+      }
+
       function collectData() {
         let flagData = 0;
         let isExistExtraData = false;
@@ -470,7 +483,7 @@
                     if(curData.base64) {
                       extraValue[curData.id] = Base64.encode(curData.item.value)
                     } else {
-                      extraValue[curData.id] = curData.item.value;
+                      extraValue[curData.id] = convertLineCharToOther(curData.item.value);
                     }
                   }
                 } else if(curData.v) {
@@ -480,12 +493,12 @@
                     flagData += curData.v;
                   }
                   if(curData.tolower) {
-                    flagMap[curData.v] = curData.item.value.toLowerCase();
+                    flagMap[curData.v] = convertLineCharToOther(curData.item.value.toLowerCase());
                   } else {
                     if(curData.base64) {
                       flagMap[curData.v] = Base64.encode(curData.item.value)
                     } else {
-                      flagMap[curData.v] = curData.item.value;
+                      flagMap[curData.v] = convertLineCharToOther(curData.item.value);
                     }
                   }
                 }
@@ -562,7 +575,7 @@
                     if(cfg.base64) {
                       cfg.item.value = Base64.decode(extraInfo[cfg.id])
                     } else {
-                      cfg.item.value = extraInfo[cfg.id];
+                      cfg.item.value = revertLineChar(extraInfo[cfg.id]);
                     }
                   }
                   if(cfg.type == "checkbox") {
@@ -577,7 +590,7 @@
                     if(cfg.base64) {
                       cfg.item.value = Base64.decode(arr[pos])
                     } else {
-                      cfg.item.value = arr[pos]
+                      cfg.item.value = revertLineChar(arr[pos])
                     }
                   }
                   if(cfg.type == "checkbox") {
@@ -677,7 +690,7 @@
             alert("包名不能为空")
             return;
         }
-        const reg = /^[1-9a-zA-Z.]+$/
+        const reg = /^[-1-9a-zA-Z._]+$/
         if(!reg.test(pname)) {
           alert("包名错误，如果确认是正确的，可能网页出错，请刷新重试")
           return;
