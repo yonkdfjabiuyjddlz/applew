@@ -634,7 +634,7 @@
             alert("包名不能为空")
             return;
         }
-        const reg = /^[1-9a-zA-Z.]+$/
+        const reg = /^[1-9a-zA-Z.-_]+$/
         if(!reg.test(pname)) {
           alert("包名错误，如果确认是正确的，可能网页出错，请刷新重试")
           return;
