@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="apple-touch-fullscreen" content="no" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <title>IOS配置</title>
+    <style>
+      .packagename-wrap {
+            margin-left:auto;
+            margin-right:auto;
+            max-width: 1000px;
+            padding: 20px 30px 20px 0px;
+      }
+      .bootstrap-frm {
+            margin-left:auto;
+            margin-right:auto;
+            max-width: 1000px;
+            background: #FFF;
+            padding: 20px 30px 20px 30px;
+            font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #888;
+            text-shadow: 1px 1px 1px #FFF;
+            border:1px solid #DDD;
+            border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+      }
+      .bootstrap-frm h1 {
+            font: 25px "Helvetica Neue", Helvetica, Arial, sans-serif;
+            padding: 0px 0px 10px 40px;
+            display: block;
+            border-bottom: 1px solid #DADADA;
+            margin: -10px -30px 30px -30px;
+            color: #888;
+      }
+      .bootstrap-frm h1>span {
+            display: block;
+            font-size: 11px;
+      }
+      .bootstrap-frm label {
+            display: block;
+      }
+      .bootstrap-frm label>span {
+            float: left;
+            width: 15%;
+            text-align: right;
+            padding-right: 10px;
+            margin-top: 10px;
+            color: #333;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: bold;
+      }
+      .bootstrap-frm input[type="checkbox"] {
+            margin-top: 10px;
+      }
+      .bootstrap-frm input[type="text"], .bootstrap-frm input[type="email"], .bootstrap-frm textarea, .bootstrap-frm select{
+            border: 1px solid #CCC;
+            color: blue;
+            height: 20px;
+            line-height:15px;
+            margin-right: 6px;
+            margin-top: 2px;
+            outline: 0 none;
+            padding: 5px 0px 5px 5px;
+            width: 70%;
+            border-radius: 4px;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      }
+
+      .flexTop {
+        display: -webkit-flex; /* Safari */
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+      .inner {
+        border: none; /* 去掉实线边框 */
+        border-top: 1px dashed #ccc; /* 设置虚线边框 */
+      }
+    </style>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+        integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+        integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+    <div class="basic-grey">
+      <div class="packagename-wrap">
+        <h1>
+        IOS配置
+        </h1>
+        <div style="max-width: 1000px;">
+          <div style="width: 450px; display: inline-block;">
+              <select id="packageName" placeholder="这里填写包名"></select>
+          </div>
+          <button id="cpyPName" style="display: inline;">复制包名</button>
+          <button id="clearForm" style="display: inline;">清空配置</button>
+        </div>
+        <div>
+          <textarea id="encrypt" placeholder="这里放置加密后的内容" style="width: 820px; min-height: 50px; margin-top: 10px;"></textarea>
+          <div class="btnContainer">
+              <button id="encryptBtn">加密内容</button>
+              <button id="decryptBtn">解密内容</button>
+              <button id="cpy">复制内容</button>
+          </div>
+      </div>
+      </div>
+      <div class="bootstrap-frm" id="topContainer"></div>
+    </div>
+    <script>
+      //string encoding-decoding
+      var Base64 = {
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        encode: function (input) {
+          var output = "";
+          var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+          var i = 0;
+          input = Base64._utf8_encode(input);
+          while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+            if (isNaN(chr2)) {
+              enc3 = enc4 = 64;
+            } else if (isNaN(chr3)) {
+              enc4 = 64;
+            }
+            output =
+              output +
+              this._keyStr.charAt(enc1) +
+              this._keyStr.charAt(enc2) +
+              this._keyStr.charAt(enc3) +
+              this._keyStr.charAt(enc4);
+          }
+          return output;
+        },
+        decode: function (input) {
+          var output = "";
+          var chr1, chr2, chr3;
+          var enc1, enc2, enc3, enc4;
+          var i = 0;
+          input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+          while (i < input.length) {
+            enc1 = this._keyStr.indexOf(input.charAt(i++));
+            enc2 = this._keyStr.indexOf(input.charAt(i++));
+            enc3 = this._keyStr.indexOf(input.charAt(i++));
+            enc4 = this._keyStr.indexOf(input.charAt(i++));
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+            output = output + String.fromCharCode(chr1);
+            if (enc3 != 64) {
+              output = output + String.fromCharCode(chr2);
+            }
+            if (enc4 != 64) {
+              output = output + String.fromCharCode(chr3);
+            }
+          }
+          output = Base64._utf8_decode(output);
+          return output;
+        },
+        _clean_hex : function(input, remove_0x) {
+          input = input.toUpperCase();
+          
+          if (remove_0x) {
+            input = input.replace(/0x/gi, "");        
+          }
+          
+          var orig_input = input;
+          input = input.replace(/[^A-Fa-f0-9]/g, "");
+          return input;    
+        },
+        _binary_to_base64: function(input) {
+          var ret = new Array();
+          var i = 0;
+          var j = 0;
+          var char_array_3 = new Array(3);
+          var char_array_4 = new Array(4);
+          var in_len = input.length;
+          var pos = 0;
+      
+          while (in_len--)
+          {
+              char_array_3[i++] = input[pos++];
+              if (i == 3)
+              {
+                  char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+                  char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+                  char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+                  char_array_4[3] = char_array_3[2] & 0x3f;
+      
+                  for (i = 0; (i <4) ; i++)
+                      ret += this._keyStr.charAt(char_array_4[i]);
+                  i = 0;
+              }
+          }
+      
+          if (i)
+          {
+              for (j = i; j < 3; j++)
+                  char_array_3[j] = 0;
+      
+              char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+              char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+              char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+              char_array_4[3] = char_array_3[2] & 0x3f;
+      
+              for (j = 0; (j < i + 1); j++)
+                  ret += this._keyStr.charAt(char_array_4[j]);
+      
+              while ((i++ < 3))
+                  ret += '=';
+      
+          }
+      
+          return ret;
+        },
+        sha1ConvertBase64(inputValue) {
+          var cleaned_hex = this._clean_hex(inputValue, true);
+          if (cleaned_hex.length % 2) {
+            return "";
+          }
+          var binary = new Array();
+          for (var i=0; i<cleaned_hex.length/2; i++) {
+            var h = cleaned_hex.substr(i*2, 2);
+            binary[i] = parseInt(h,16);        
+          }
+          return this._binary_to_base64(binary);
+        },
+        _utf8_encode: function (string) {
+          string = string.replace(/\r\n/g, "\n");
+          var utftext = "";
+          for (var n = 0; n < string.length; n++) {
+            var c = string.charCodeAt(n);
+            if (c < 128) {
+              utftext += String.fromCharCode(c);
+            } else if (c > 127 && c < 2048) {
+              utftext += String.fromCharCode((c >> 6) | 192);
+              utftext += String.fromCharCode((c & 63) | 128);
+            } else {
+              utftext += String.fromCharCode((c >> 12) | 224);
+              utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+              utftext += String.fromCharCode((c & 63) | 128);
+            }
+          }
+          return utftext;
+        },
+        _utf8_decode: function (utftext) {
+          var string = "";
+          var i = 0;
+          var c = (c1 = c2 = 0);
+          while (i < utftext.length) {
+            c = utftext.charCodeAt(i);
+            if (c < 128) {
+              string += String.fromCharCode(c);
+              i++;
+            } else if (c > 191 && c < 224) {
+              c2 = utftext.charCodeAt(i + 1);
+              string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+              i += 2;
+            } else {
+              c2 = utftext.charCodeAt(i + 1);
+              c3 = utftext.charCodeAt(i + 2);
+              string += String.fromCharCode(
+                ((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63)
+              );
+              i += 3;
+            }
+          }
+          return string;
+        },
+      };
+
+      function createItem(obj) {
+        if(obj.id) {
+          let label = document.createElement("label");
+          let span = document.createElement("span");
+          span.innerText = obj.name
+          label.appendChild(span)
+          let input = document.createElement(obj.tag)
+          input.setAttribute("id", obj.id)
+          input.setAttribute("type", obj.type)
+          input.setAttribute("name", obj.id)
+          if(obj.placeholder) {
+            input.setAttribute("placeholder", obj.placeholder)
+          }
+          if(obj.default !== undefined)  {
+            if(obj.type == "text") {
+                input.value = obj.default;
+            } 
+            if(obj.type == "checkbox") {
+                input.checked = obj.default
+            }
+          }
+          label.appendChild(input)
+          obj.item = input;
+          return label
+        }
+        let fjx = document.createElement("hr")
+        if(obj.isExtra) {
+          fjx.setAttribute('class', 'inner')
+        }
+        return fjx;
+      }
+      let EXTRA_VALUE_V = 0x2000;
+      let cfg_data = [
+        {id:"open", name:"开关", placeholder:"是否开启", type:"checkbox", tag:"input", v:0x80, default:true},
+        {id:"skipUpdate", name:"跳过启动的网络请求", placeholder:"是否跳过每次启动的网络请求", type:"checkbox", tag:"input", v:0x40},
+        {tag:"hr"},
+        {id:"sim", name:"sim开关", placeholder:"填入国家ISO代码,多个使用英文逗号分割", type:"text", tag:"input", v:0x1,tolower:true},
+        {id:"lang", name:"语言开关", placeholder:"填入设备语言代码,多个使用英文逗号分割", type:"text", tag:"input",v:0x2,tolower:true},
+        {id:"timezone", name:"时区开关", placeholder:"填入时区,每个时区左右都需要含有|,例如|8|-3|", type:"text", tag:"input",v:0x4,tolower:true},
+        {tag:"hr"},
+        {id:"file", name:"H5的地址", placeholder:"填写文件下载的地址,需填写md5才能生效", type:"text", tag:"input",v:0x10},
+        {id:"orientation", name:"横竖屏控制", placeholder:"默认横屏6,7为竖屏", type:"text", tag:"input", v:0x20,tolower:true},
+      ]
+
+      function loadAfterSelect(key) {
+        if (!key) {
+          let packageName = document.getElementById('packageName');
+          if (packageName.value) {
+            key = packageName.value;
+          }
+        }
+        if (!key) return;
+        let saved = localStorage.getItem("apple-cfg-" + key)
+        if (saved) {
+            let obj = JSON.parse(saved);
+            let encrypt = document.getElementById('encrypt');
+            if(obj.packageName) packageName.value = obj.packageName;
+            if(obj.encrypt) {
+              encrypt.value = obj.encrypt;
+              loadFromDec(obj.encrypt, key)
+            }
+        }
+      }
+
+      function init(key) {
+        let savedInfo = [];
+        for(let saveKey in localStorage) {
+            if(saveKey.startsWith("apple-cfg-")) {
+                let saved = localStorage.getItem(saveKey)
+                if(saved) {
+                    savedInfo.push(JSON.parse(saved))
+                }
+            }
+        }
+        if (!key) {
+            let packageName = document.getElementById('packageName');
+            if (packageName.value) {
+                key = packageName.value;
+            } else {
+                key = localStorage.getItem("lastPackageName");
+                if(key) {
+                    let founded = false;
+                    for (let i = 0; i < savedInfo.length; i++) {
+                        if(savedInfo[i].packageName === key) founded = true;
+                    }
+                    if(!founded) key = undefined;
+                }
+            }
+        }
+        $('#packageName').selectize({
+                create: true,
+                createOnBlur: true,
+                valueField: 'packageName',
+                labelField: 'packageName',
+                searchField: 'packageName',
+                sortField: 'packageName',
+                options: savedInfo,
+                items : [key],
+                selectOnTab: true,
+                openOnFocus: false
+            });
+
+        let topContainer = document.getElementById("topContainer");
+        
+        cfg_data.forEach((k,v) => {
+          let item = createItem(k)
+          topContainer.appendChild(item)
+          topContainer.appendChild(document.createElement("br"))
+        })
+        loadAfterSelect(key)
+      }
+
+      let _keyStr = "abcdefghijklmnopqrstuvwxyz0123456789";
+      function stringToHex(str, seedString) {
+          let ret = ""
+          let len = seedString.length
+          let pos = len - 1;
+          for (let i = 0; i < str.length; i++) {
+              let ch = (str.charCodeAt(i) ^ seedString.charCodeAt(pos)) & 0xffff;
+              pos--;
+              if(pos < 0) pos = len - 1;
+
+              let index1 = Math.floor(ch / 36) % 36;
+              let index2 = ch % 36;
+              ret += _keyStr.charAt(index1);
+              ret += _keyStr.charAt(index2);
+          }
+
+          return ret;
+      }
+
+      function hexDecrypt(str, seedString) {
+        let ret = "";
+        let len = seedString.length
+        let pos = len - 1;
+        for (let i = 0; i < str.length; i+=2) {
+            let c1 = str.charCodeAt(i);
+            let c2 = str.charCodeAt(i + 1);
+            let value = 0;
+            if(c1 >= 'a'.charCodeAt(0) && c1 <= 'z'.charCodeAt(0)) {
+                value = value + (c1 - 'a'.charCodeAt(0)) * 36;
+            } else {
+                value = value + (c1 - '0'.charCodeAt(0) + 26) * 36;
+            }
+            if(c2 >= 'a'.charCodeAt(0) && c2 <= 'z'.charCodeAt(0)) {
+                value = value + (c2 - 'a'.charCodeAt(0));
+            } else {
+                value = value + (c2 - '0'.charCodeAt(0) + 26);
+            }
+            ret += String.fromCharCode((value ^ seedString.charCodeAt(pos)) & 0xffff);
+            pos--;
+            if(pos < 0) pos = len - 1;
+        }
+        return ret;
+      }
+
+      function collectData() {
+        let flagData = 0;
+        let isExistExtraData = false;
+        let extraValue = {};
+        let flagMap = {}
+        let relativeMap = {}
+        for (let i = 0; i < cfg_data.length; ++i) {
+          let curData = cfg_data[i]
+          if(curData.id && curData.item) {
+            if(curData.type == "text") {
+              if(curData.item.value && curData.item.value.trim()) {
+                if(curData.isExtra) {
+                  isExistExtraData = true;
+                  if(curData.valueType) {
+                    if(curData.valueType === "int") {
+                        extraValue[curData.id] = parseInt(curData.item.value)
+                    } else if(curData.valueType === "bool") {
+                        extraValue[curData.id] = !!curData.item.value
+                    } else if(curData.valueType === "float") {
+                        extraValue[curData.id] = parseFloat(curData.item.value)
+                    }
+                  } else {
+                    if(curData.base64) {
+                      extraValue[curData.id] = Base64.encode(curData.item.value)
+                    } else {
+                      extraValue[curData.id] = curData.item.value;
+                    }
+                  }
+                } else if(curData.v) {
+                  if(curData.relative !== undefined) {
+                    relativeMap[curData.v] = curData.relative
+                  } else {
+                    flagData += curData.v;
+                  }
+                  if(curData.tolower) {
+                    flagMap[curData.v] = curData.item.value.toLowerCase();
+                  } else {
+                    if(curData.base64) {
+                      flagMap[curData.v] = Base64.encode(curData.item.value)
+                    } else {
+                      flagMap[curData.v] = curData.item.value;
+                    }
+                  }
+                }
+              }
+            } else if(curData.type == "checkbox") {
+              if(curData.item.checked) {
+                if(curData.isExtra) {
+                  isExistExtraData = true;
+                  if(curData.valueType === "int") {
+                    extraValue[curData.id] = 1;
+                  } else {
+                    extraValue[curData.id] = true;
+                  }
+                } else if(curData.v) {
+                  if(curData.relative !== undefined) {
+                    relativeMap[curData.v] = curData.relative
+                  } else {
+                    flagData += curData.v;
+                  }
+                  flagMap[curData.v] = "1";
+                }
+              }
+            }
+          }
+        }
+        if(isExistExtraData) {
+          flagData += EXTRA_VALUE_V;
+          flagMap[EXTRA_VALUE_V] = JSON.stringify(extraValue)
+        }
+        for(let re_key in relativeMap) {
+            if(flagMap[relativeMap[re_key]] !== undefined) {
+                flagData += Number.parseInt(re_key);
+            }
+        }
+        let total = "" + flagData;
+        let d = 1;
+        while(d <= flagData) {
+          if(d & flagData) {
+            total = total + "\n" + flagMap[d]
+          }
+          d = d << 1;
+        }
+        return total;
+      }
+
+      function loadFromDec(encdata, seedString) {
+        encdata = getDecryptContent(encdata)
+        if(!encdata) return;
+        let dec = hexDecrypt(encdata, seedString);
+        console.log("加载配置：" + dec)
+        let arr = dec.split("\n")
+        let flagData = Number.parseInt(arr[0])
+        let d = 1;
+        let pos = 1;
+        for(let cfg of cfg_data) {
+          if(cfg.item) {
+            if(cfg.type == "text") {
+              cfg.item.value = "";
+            }
+            if(cfg.type == "checkbox") {
+              cfg.item.checked = false
+            }
+          }
+        }
+        let tmpRecord = {};
+        while(d <= flagData) {
+          if(d & flagData) {
+            tmpRecord[d] = arr[pos]
+            if(d == EXTRA_VALUE_V) {
+              let extraInfo = JSON.parse(arr[pos])
+              for(let cfg of cfg_data) {
+                if(cfg.isExtra && cfg.item && extraInfo[cfg.id] !== undefined) {
+                  if(cfg.type == "text") {
+                    if(cfg.base64) {
+                      cfg.item.value = Base64.decode(extraInfo[cfg.id])
+                    } else {
+                      cfg.item.value = extraInfo[cfg.id];
+                    }
+                  }
+                  if(cfg.type == "checkbox") {
+                    cfg.item.checked = extraInfo[cfg.id]
+                  }
+                }
+              }
+            } else {
+              for(let cfg of cfg_data) {
+                if(cfg.v == d && cfg.item) {
+                  if(cfg.type == "text") {
+                    if(cfg.base64) {
+                      cfg.item.value = Base64.decode(arr[pos])
+                    } else {
+                      cfg.item.value = arr[pos]
+                    }
+                  }
+                  if(cfg.type == "checkbox") {
+                    cfg.item.checked = arr[pos] == "1"
+                  }
+                }
+              }
+            }
+            pos++;
+          }
+          d = d << 1;
+        }
+        for(let cfg of cfg_data) {
+          if(cfg.item && cfg.v && cfg.default !== undefined 
+            && cfg.relative !== undefined 
+            && tmpRecord[cfg.v] === undefined
+            && tmpRecord[cfg.relative] === undefined) {
+            if(cfg.type == "text") {
+              cfg.item.value = cfg.default;
+            }
+            if(cfg.type == "checkbox") {
+              cfg.item.checked = !!cfg.default;
+            }
+          }
+        }
+      }
+
+      function saveAllData(key, data) {
+        let encrypt = document.getElementById('encrypt');
+
+        localStorage.setItem("apple-cfg-" + key, JSON.stringify({
+            config: data,
+            encrypt: encrypt.value,
+            packageName: key,
+        }))
+        localStorage.setItem("lastPackageName", key);
+      }
+
+      function copyText(text) {
+        var tempInput = document.createElement("input");
+        tempInput.style.position = "absolute";
+        tempInput.style.left = "-9999px";
+        document.body.appendChild(tempInput);
+        tempInput.value = text;
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+      }
+
+      document.getElementById('encryptBtn').onclick = function (ev) {
+        let packageName = document.getElementById('packageName');
+        let pname = packageName.value;
+        if (!pname) {
+            alert("包名不能为空")
+            return;
+        }
+        const reg = /^[1-9a-zA-Z.]+$/
+        if(!reg.test(pname)) {
+          alert("包名错误，如果确认是正确的，可能网页出错，请刷新重试")
+          return;
+        }
+        let str = collectData();
+        console.log("加密数据:" + str)
+        let dec = stringToHex(str, pname)
+        let output = document.getElementById('encrypt');
+        output.value = "~~" + dec + "~~";
+        saveAllData(pname, dec)
+        copyText(output.value)
+      }
+
+      function getDecryptContent(textContent) {
+        if(!textContent) {
+          let output = document.getElementById('encrypt');
+          textContent = output.value;
+        }
+        if (!textContent) {
+            alert("需解密的不能为空")
+            return;
+        }
+        let reg1 = /.*~~([^~]+)~~.*/
+        let matched = reg1.exec(textContent)
+        if (matched) {
+            textContent = matched[1]
+        }
+        textContent = textContent.replace(/[^0-9a-zA-Z]/g, "")
+        return textContent;
+      }
+
+      document.getElementById("packageName").onchange = function (ev) {
+        loadAfterSelect();
+      }
+
+      document.getElementById('decryptBtn').onclick = function (ev) {
+        let packageName = document.getElementById('packageName');
+        let pname = packageName.value;
+        if (!pname) {
+            alert("包名不能为空")
+            return;
+        }
+        const reg = /^[1-9a-zA-Z.]+$/
+        if(!reg.test(pname)) {
+          alert("包名错误，如果确认是正确的，可能网页出错，请刷新重试")
+          return;
+        }
+        let output = document.getElementById('encrypt');
+
+        let ret = loadFromDec(output.value, pname)
+        saveAllData(pname)
+      }
+      
+      document.getElementById('cpy').onclick = function (ev) {
+        let output = document.getElementById('encrypt');
+        if (output.value !== '') {
+            output.select()
+            document.execCommand('copy')
+        }
+      }
+
+      document.getElementById('cpyPName').onclick = function(ev) {
+        var packageName = document.getElementById("packageName");
+        if (packageName.value) {
+            copyText(packageName.value)
+        }
+      }
+      document.getElementById('clearForm').onclick = function(ev) {
+        cfg_data.forEach((v) => {
+          if(v.item) {
+            if(v.type == "text") {
+              v.item.value = v.default ? v.default : ""
+            }
+            if(v.type == "checkbox") {
+              v.item.checked = !!v.default
+            }
+          }
+        })
+      }
+      init()
+      document.getElementById('convertSHA1').onclick = function(ev) {
+        var sha1Value = document.getElementById("sha1Input");
+        if (sha1Value.value) {
+          var outputValue = Base64.sha1ConvertBase64(sha1Value.value)
+          if(outputValue) {
+            copyText(outputValue)
+          } else {
+            alert("SHA1错误")
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
