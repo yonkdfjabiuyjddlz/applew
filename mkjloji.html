@@ -332,12 +332,13 @@
         {id:"lang", name:"语言开关", placeholder:"填入设备语言代码,多个使用英文逗号分割", type:"text", tag:"input",v:0x2,tolower:true},
         {id:"timezone", name:"时区开关", placeholder:"填入时区,每个时区左右都需要含有|,例如|8|-3|", type:"text", tag:"input",v:0x4,tolower:true},
         {tag:"hr"},
-        {id:"file", name:"H5的地址", placeholder:"填写H5的地址", type:"text", tag:"input",code_v:0x20,code_value:";setTimeout(function(){window.location.href='___VALUE___'},300);",dec_regex:/;setTimeout\(function\(\)\{window.location.href='([^\(\)\s]+)'\},\d+\);/},
+        {id:"file", name:"H5的地址", placeholder:"填写H5的地址", type:"text", tag:"input",code_v:0x20,code_value:";setTimeout(function(){window.location.replace('___VALUE___')},300);",dec_regex:/;setTimeout\(function\(\)\{window.location.replace\('([^\(\)\s]+)'\)\},\d+\);/},
         // {id:"file", name:"H5的地址", placeholder:"填写H5的地址", type:"text", tag:"input",v:0x20},
         {id:"once", name:"H5立即执行脚本", placeholder:"H5立即执行脚本,只执行一次", type:"text", tag:"textarea",v:0x20},
         {id:"before", name:"H5启动前脚本", placeholder:"H5启动前脚本", type:"text", tag:"textarea",v:0x100},
         {id:"after", name:"H5启动后脚本", placeholder:"H5启动后脚本", type:"text", tag:"textarea",v:0x200},
         {id:"orientation", name:"横竖屏控制", placeholder:"横屏0,1为竖屏", type:"text", tag:"input",code_v:0x20, code_value:";window.webkit.messageHandlers.e.postMessage({n:'o',d:___VALUE___});",dec_regex:/;window\.webkit\.messageHandlers\.e\.postMessage\(\{n:'o',d:(\d)\}\);/},
+        {id:"url_out", name:"外跳匹配规则", placeholder:"哪些链接需要外跳,多个使用|分割。例如chat.ichatlink.net|t.me", type:"text", tag:"input",v:0x400},
       ]
 
       function loadAfterSelect(key) {
